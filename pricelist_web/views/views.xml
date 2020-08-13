@@ -1,0 +1,313 @@
+<openerp>
+  <data>
+ <!--     <template id="pricelist_filter" name="Pricelist" inherit_id="object">
+          <xpath expr="//div[contains(@class,'o_my_documents')]" position="replace">
+            <t t-call="pricelist_web.pricelist_filtered" />
+       </xpath>
+      </template> -->
+       <template id="pricelist_filtered" name="Pricelist">
+        <t t-call="website.layout">
+        <xpath expr="." position="inside">
+            <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+            <link rel="stylesheet" href="/pricelist_web/static/src/less/web_pricelist.css"/>
+       </xpath>
+
+        <section id="header">
+            <div class="row d-flex">
+                <div class="col-md-4 col-lg-4 col-xl-4 col-sm-12 col-xs-12 col-md-offset-4 text-center">
+                 <h2>Price List Search</h2>
+                </div>
+     
+            </div>
+     
+        </section>
+        <section id="form">
+          <div class="row d-flex">
+           <div class="col-md-4 col-lg-4 col-xl-4 col-sm-12 col-xs-12 col-md-offset-4 text-center">
+             <div class="panel panel-primary">
+               <div class="panel-heading">
+                 <!-- <h3 class="panel-title">Price List Search</h3> -->
+               </div>
+               <div class="panel-body">
+                 <form class="needs-validation" action="/search_pricelist" method="post">
+
+                  <div class="row">
+                    <div class="col-sm-12 col-md-6">
+                      <label for="date1">Date From</label>
+                     <input type="Date" name="date1" class="form-control col s6" id="date1" required="required"/>
+                    </div>
+                    <div class="col-sm-12 col-md-6">
+                      <label for="date2">Date By</label>
+                    <input type="Date" name="date2" class="form-control col s6" id="date2" required="required"/>
+                    </div>
+                  </div>
+                <br/>     
+                   <button type="submit" class="btn btn-primary">Search</button>
+                 </form> 
+                 <br/>
+                 <label>Type to Search</label>
+                 <input type="text" id="myInput" onkeyup="myFunction()" class="form-control" placeholder="Search by Text" title="Type to Search"/> 
+                 <br/>
+                 <label>Activity Type</label>
+                 <div id="types">
+                 <label class="radio-inline"><input type="radio" onclick="myFunction()" name="optradio" value="regular"/>Regular</label>
+                 <label class="radio-inline"><input type="radio" onclick="myFunction()" name="optradio" value="Semi"/>Semi-rivate</label>
+                 <label class="radio-inline"><input type="radio" onclick="myFunction()" name="optradio" value="private"/>Private</label>                 
+                 <label class="radio-inline"><input type="radio" onclick="myFunction()" name="optradio" value="VIP"/>VIP</label>  
+                 </div>                 
+               </div>
+             </div>
+     
+            </div>
+          </div>
+        </section>
+         <section id="body">
+          <div class="row d-flex">
+           <div class="col-md-8 col-lg-8 col-xl-8 col-sm-12 col-xs-12 col-md-offset-2 text-center">
+            <h3> <span>From: </span><span t-esc="datetime.datetime.strptime(str(date1), '%Y-%m-%d').strftime('%d-%b-%Y')"></span> <span>To: </span><span t-esc="datetime.datetime.strptime(str(date2), '%Y-%m-%d').strftime('%d-%b-%Y')"></span></h3>
+           <hr/>
+           <br/>
+           <t t-if="not filterPricelist">
+            <h1>There are currently no pricelist to show.</h1>
+        </t>  
+      </div> 
+        <t t-if="filterPricelist">  
+           <div id="exTab1" class="col-md-8 col-lg-8 col-xl-8 col-sm-12 col-xs-12 col-md-offset-2 text-center">	
+           <ul  class="nav nav-pills">
+                 <li class="active">
+                   <a  href="#1a" data-toggle="tab">Pricelist</a>
+                 </li>
+                 <li><a href="#2a" data-toggle="tab">Transports</a>
+                 </li>
+                 <li>
+                   <a  href="#3a" data-toggle="tab">Activities</a>
+                 </li>
+                 <t t-if="lodging_field"><li><a href="#4a" data-toggle="tab">Lodging</a>
+                 </li></t>
+               </ul>      
+                 <div class="tab-content clearfix">
+                   <div class="tab-pane active" id="1a">
+                     <div class="panel panel-primary">
+               <div class="panel-heading">
+                 <h3><span>Activities</span> </h3>
+               </div>
+               <div class="panel-body">
+                 <div class="table-responsive">
+                   <table class="table table-hover table-striped" style="width: 100%;table-layout: auto;" data-name="mytable">
+                       <thead>
+                           <tr>
+                               <th class="text-center">Name</th>
+                               <th class="text-center">Date From</th>
+                               <th class="text-center">Date To</th>
+                            </tr>
+                       </thead>
+                       <tbody>
+                           
+                           <t t-foreach="filterPricelist" t-as="_pricelist">
+                           <tr>
+                              <td t-esc="_pricelist.title"></td>
+                              <td ><span t-if="_pricelist.date_start"><span t-esc="datetime.datetime.strptime(str(_pricelist.date_start), '%Y-%m-%d').strftime('%d-%b-%Y')"></span></span></td>
+                              <td > <span t-if="_pricelist.date_end"><span t-esc="datetime.datetime.strptime(str(_pricelist.date_end), '%Y-%m-%d').strftime('%d-%b-%Y')"></span></span></td>
+                            </tr>
+                            </t>                           
+                       </tbody>
+                   </table>
+               </div>                 
+               </div>
+             </div>
+                   </div>
+                   <div class="tab-pane" id="2a">
+                     <div class="panel panel-primary">
+                      <t t-set="countTrans" t-value="1"/>
+                      <t t-set="name" t-value="none"/>
+                      <t t-foreach="filterPricelist" t-as="listPriceTr">
+                        <t t-if="listPriceTr.transport_tariff_line_ids">  
+                        <t t-foreach="listPriceTr.transport_tariff_line_ids.sorted(key=lambda r: r.first_location.name)" t-as="filterTransport">
+                          <t t-if="countTrans == 1 and filterTransport.ready">
+                            <t t-set="name" t-value="filterTransport.first_location.name"/>
+                            <div class="panel-heading">
+                              <h3><span t-esc="listPriceTr.title"></span> - <span t-esc="name"></span></h3>
+                            </div>
+                        <div class="panel-body">
+                         <div class="table-responsive">
+                           <table class="table table-hover table-striped" style="width: 100%;table-layout: auto;" data-name="mytable">
+                               <thead>
+                                   <tr>
+                                       <th class="text-center">to/from</th>
+                                       <th class="text-center">1 to 4 pax</th>
+                                       <th class="text-center">5 to 8 pax</th>
+                                       <th class="text-center">9 to 16 pax</th>
+
+                                   </tr>
+                               </thead>
+                               <tbody>
+                                <t t-foreach="listPriceTr.transport_tariff_line_ids.sorted(key=lambda r: r.first_location.name)" t-as="filterTransportlines">
+                                  <t t-if="listPriceTr.transport_tariff_line_ids"> 
+                                  <t t-if="countTrans == 1 and name == filterTransportlines.first_location.name and filterTransport.ready">                        
+                                  <tr>
+                                    <td><span t-esc="filterTransportlines.second_location.name"></span></td>
+                                    <t t-foreach="filterTransportlines.transport_tariff_line_rate_ids" t-as="tariff_line_rate">
+                                    <td><span t-esc="listPriceTr.currency_id.symbol" ></span> <span t-esc="tariff_line_rate.wholesaler_price_with_taxes"></span></td>
+                                    </t>
+                                </tr>
+                              </t>
+                            </t>
+                              <!-- here if -->
+                              </t>
+                               </tbody>
+                           </table>
+                       </div>                             
+                       </div>
+                       <t t-set="countTrans" t-value="countTrans + 1"/>
+                        </t>
+                        <t t-if="countTrans != 1 and name != filterTransport.first_location.name"> 
+                          <t t-set="countTrans" t-value="1"/>
+                          </t>
+                        </t>
+                      </t> 
+                                               <!--here -->
+                        </t>
+
+                       <hr/>
+                      </div>
+     
+                   </div>
+                   <div class="tab-pane" id="3a">
+                      <div class="panel panel-primary">
+                <div class="panel-heading">
+                  <h3>Product Details</h3>
+                </div>
+                <div class="panel-body">
+                  <div class="table-responsive">
+                    <table id="activities" class="table table-hover table-striped" style="width: 100%;table-layout: auto;" data-name="mytable">
+                        <thead>
+                            <tr>
+                                <th class="text-center">Name</th>
+                                <th class="text-center">PriceList</th>
+                                <th class="text-center">Date From</th>
+                                <th class="text-center">Date To</th>
+                                <th class="text-center">Type</th>
+                                <th class="text-center">Rate Type</th>
+                                <th class="text-center">Price</th>
+                             </tr>
+                        </thead>
+                        <tbody>
+                          <t t-foreach="filterPricelist" t-as="list_pricelist">
+                            <t t-foreach="list_pricelist.activity_tariff_line_ids" t-as="pricelist_line">
+                            <t t-if="pricelist_line.publish">
+                             <tr>                              
+                               <td ><a  t-att-href="'/activity?id='+str(pricelist_line.activity_id.id)+'&amp;'+'pricelist='+str(pricelist_line.id)"><span t-esc="pricelist_line.activity_id.name"></span></a></td>
+                               <td t-esc="list_pricelist.title"></td>
+                               <td ><span t-if="list_pricelist.date_start"><span t-esc="datetime.datetime.strptime(str(list_pricelist.date_start), '%Y-%m-%d').strftime('%d-%b-%Y')"></span></span></td>
+                                <td > <span t-if="list_pricelist.date_end"><span t-esc="datetime.datetime.strptime(str(list_pricelist.date_end), '%Y-%m-%d').strftime('%d-%b-%Y')"></span></span></td>
+                               <td t-esc="pricelist_line.activity_type"></td>
+                               <t t-set= "count_rates" t-value="1"/>
+                               <t t-foreach="pricelist_line.activity_tariff_line_rate_ids" t-as="rate_name">
+                               <t t-if="count_rates == 1 ">
+                               <td t-esc="rate_name.type_id.name"></td>  
+                                <td> <span t-esc="list_pricelist.currency_id.symbol"></span> <span t-esc="rate_name.wholesaler_price_with_taxes"></span> </td>                               
+                               </t> 
+                               <t t-set= "count_rates" t-value="count_rates+1"/>                                
+                               </t>
+                            </tr>
+<!--                             <t t-set= "count_rates" t-value="1"/>
+                            <t t-foreach="pricelist_line.activity_tariff_line_rate_ids" t-as="rate_name">
+                            <t t-if="count_rates > 1 ">
+                              <tr>
+                                <td ><a  t-att-href="'/activity?id='+str(pricelist_line.activity_id.id)+'&amp;'+'pricelist='+str(pricelist_line.id)"><span t-esc="pricelist_line.activity_id.name"></span></a></td>
+                                <td t-esc="list_pricelist.title"></td>
+                                <td ><span t-if="list_pricelist.date_start"><span t-esc="datetime.datetime.strptime(str(list_pricelist.date_start), '%Y-%m-%d').strftime('%d-%b-%Y')"></span></span></td>
+                                <td > <span t-if="list_pricelist.date_end"><span t-esc="datetime.datetime.strptime(str(list_pricelist.date_end), '%Y-%m-%d').strftime('%d-%b-%Y')"></span></span></td>
+                                <td t-esc="pricelist_line.activity_id.type"></td>
+                                <td t-esc="rate_name.type_id.name"></td>  
+                                <td> <span t-esc="list_pricelist.currency_id.symbol"></span> <span t-esc="rate_name.wholesaler_price_with_taxes"></span> </td> 
+                              </tr>                              
+                            </t> 
+                            <t t-set= "count_rates" t-value="count_rates+1"/>                             
+                            </t> -->
+
+                            </t>
+                             </t>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>                 
+                </div>
+              </div>
+                   
+                   </div>
+                   <t t-if="lodging_field">
+                   <div class="tab-pane" id="4a">
+                    <div class="panel panel-primary">
+                      <t t-set="countLod" t-value="1"/>
+                      <t t-set="name" t-value="none"/>
+                      <t t-foreach="filterPricelist" t-as="listPriceLod">
+                        <t t-if="listPriceLod.lodging_pricelist_ids">  
+                        <t t-foreach="listPriceLod.lodging_pricelist_ids" t-as="filterLod">
+                          <t t-if="countLod == 1">
+                            <t t-set="name" t-value="filterLod.name"/>
+                            <div class="panel-heading">
+                              <h3><span t-esc="filterLod.hotel_id.name"></span> - <span t-esc="name"></span></h3>
+                            </div>
+                        <div class="panel-body">
+                         <div class="table-responsive">
+                           <table class="table table-hover table-striped" style="width: 100%;table-layout: auto;" data-name="mytable">
+                               <thead>
+                                   <tr>
+                                      <th class="text-center">Room Cat</th>
+                                      <th class="text-center">Occupacy</th>
+                                      <th class="text-center">Date From</th>
+                                      <th class="text-center">Date To</th>
+                                      <th class="text-center">Price</th>
+
+                                   </tr>
+                               </thead>
+                               <tbody>
+                                <t t-foreach="listPriceLod.lodging_pricelist_ids" t-as="filterLodlines">
+                                  <t t-if="listPriceLod.lodging_pricelist_ids"> 
+                                  <t t-if="countLod == 1 and filterLod.name == name"> 
+                                  <t t-foreach="filterLodlines.lodging_tariff_rate_ids" t-as="tariff_line_rate">                       
+                                  <tr>
+                                    <td ><a  t-att-href="'/lodging?pricelist='+str(filterLodlines.id)"><span t-esc="tariff_line_rate.room_category_id.name"></span></a></td>                        
+                                    <td><span t-esc="tariff_line_rate.occupancy"></span></td>
+                                    <td><span t-esc="filterLodlines.date_start1"></span></td>
+                                    <td><span t-esc="filterLodlines.date_end1"></span></td>
+                                    <td><span t-esc="listPriceLod.currency_id.symbol" ></span> <span t-esc="tariff_line_rate.wholesaler_price"></span></td>
+                                    <t t-set="countLod" t-value="countLod + 1"/>
+                                </tr>
+                              </t>
+                              </t>
+                            </t>
+                              <!-- here if -->
+                              </t>
+                               </tbody>
+                           </table>
+                       </div>                             
+                       </div>                     
+                        </t>
+                        <t t-if="countLod != 1"> 
+                          <t t-set="countLod" t-value="1"/>
+                          </t>
+                        </t>
+                      </t> 
+                                               <!--here -->
+                        </t>
+
+                       <hr/>
+                      </div>
+                  </div>
+                  </t>
+                  <!-- here end panel -->
+
+                 </div>
+             </div>
+            </t>
+             </div>
+             </section>
+             </t>
+            <xpath expr="." position="after">
+            <script src="/pricelist_web/static/src/js/app.js"></script>
+          </xpath>
+        </template>
+  </data>
+</openerp>

@@ -1,0 +1,108 @@
+<openerp>
+    <data>
+        <template id="pricelist">
+        <t t-call="website.layout">
+          <xpath expr="." position="inside">
+            <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+            <link rel="stylesheet" href="/pricelist_web/static/src/less/web_pricelist.css"/>
+       </xpath>
+          <section id="header">
+            <div class="row d-flex">
+                <div class="col-md-4 col-lg-4 col-xl-4 col-sm-12 col-xs-12 col-md-offset-4 text-center">
+                 <h2>Price List Search</h2>
+                </div>
+     
+            </div>
+     
+        </section>
+        <section id="form">
+          <div class="row d-flex">
+           <div class="col-md-4 col-lg-4 col-xl-4 col-sm-12 col-xs-12 col-md-offset-4 text-center">
+             <div class="panel panel-primary">
+               <div class="panel-heading">
+                 <!-- <h3 class="panel-title">Price List Search</h3> -->
+               </div>
+               <div class="panel-body">
+                 <form class="needs-validation" action="/search_pricelist" method="post">
+                  <div class="row">
+                    <div class="col-sm-12 col-md-6">
+                      <label for="date1">Date From</label>
+                      <!-- <div class="input-group text-center">                         -->
+                        <input type="Date" name="date1" class="form-control" id="date1" required="required"/>
+                        <!-- <span class="input-group-addon" id="basic-addon1"><span class="glyphicon glyphicon-calendar" aria-hidden="true"></span></span> -->
+                      <!-- </div> -->
+                      
+                    </div>
+                    <div class="col-sm-12 col-md-6">
+                      <label for="date2">Date By</label>
+                      <!-- <div class="input-group text-center"> -->
+                        <input type="Date" name="date2" class="form-control" id="date2" required="required"/>
+                        <!-- <span class="input-group-addon" id="basic-addon1"><span class="glyphicon glyphicon-calendar" aria-hidden="true"></span></span> -->
+                      <!-- </div>                     -->
+                    </div>
+                  </div>
+                <br/>     
+                   <button type="submit" class="btn btn-primary">Search</button>
+                 </form>            
+               </div>
+             </div>
+     
+            </div>
+          </div>
+        </section>
+        <section id="body">
+          <div class="row d-flex">
+           <div class="col-md-8 col-lg-8 col-xl-8 col-sm-12 col-xs-12 col-md-offset-2 text-center"><h1></h1></div>
+           <hr/>
+           <div id="exTab1" class="col-md-8 col-lg-8 col-xl-8 col-sm-12 col-xs-12 col-md-offset-2 text-center o_my_documents">	
+           <ul  class="nav nav-pills">
+                 <li class="active">
+                   <a  href="#1a" data-toggle="tab">Pricelist</a>
+                 </li>
+                
+               </ul>      
+                 <div class="tab-content clearfix">
+                   <div class="tab-pane active" id="1a">
+                     <div class="panel panel-primary">
+               <div class="panel-heading">
+                 <h3>Product Details</h3>
+               </div>
+               <div class="panel-body">
+                 <div class="table-responsive">
+                   <table class="table table-striped">
+                       <thead>
+                           <tr>
+                               <th class="text-center">Name</th>
+                               <th class="text-center">Date From</th>
+                               <th class="text-center">Date To</th>
+                            </tr>
+                       </thead>
+                       <tbody>
+                           
+                           <t t-foreach="pricelist" t-as="_pricelist">
+                           <tr>
+                              <td t-esc="_pricelist.title"></td>
+                              <td ><span t-if="_pricelist.date_start"><span t-esc="datetime.datetime.strptime(str(_pricelist.date_start), '%Y-%m-%d').strftime('%d-%b-%Y')"></span></span></td>
+                              <td > <span t-if="_pricelist.date_end"><span t-esc="datetime.datetime.strptime(str(_pricelist.date_end), '%Y-%m-%d').strftime('%d-%b-%Y')"></span></span></td>
+                            </tr>
+                            </t>
+                       </tbody>
+                   </table>
+               </div>                 
+               </div>
+             </div>
+                   </div>
+                 </div>
+             </div>
+          </div>
+        </section>       
+          </t>
+          <xpath expr="." position="after">
+            <script src="/pricelist_web/static/src/js/app.js"></script>
+          </xpath>
+        </template>
+
+        <!-- template inhehit -->
+        
+    </data>
+</openerp>
